@@ -1,0 +1,2 @@
+# Ignore temp folder used for image compression testing.
+/tmp/

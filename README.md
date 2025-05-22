@@ -70,19 +70,56 @@ docker build -t guetzli .
 
 This will:
 1. Download the Alpine Linux base image
-2. Install all necessary build dependencies
-3. Clone and build Guetzli from source
-4. Create a minimal runtime image with only required dependencies
+2. Set up a build environment with all necessary dependencies
+3. Clone the latest Guetzli commit (shallow clone)
+4. Build Guetzli from source
+5. Create a minimal runtime image containing only:
+   - The compiled Guetzli binary
+   - Required runtime libraries (libpng, libstdc++)
+   - No build tools or dependencies
+
+### Running the Local Build
+
+After building the image, you can use it the same way as the Docker Hub version, just with the local image name:
+
+```bash
+# Compress a single image
+docker run -v .:/images guetzli input.jpg output.jpg
+
+# Compress with quality setting
+docker run -v .:/images guetzli --quality 85 input.jpg output.jpg
+
+# Process multiple images
+for file in *.jpg; do
+    docker run -v .:/images guetzli "$file" "compressed_$file"
+done
+```
 
 ### Image Details
 
 The Docker image is optimized for both size and performance:
 
-- Based on Alpine Linux for minimal image size
-- Runtime dependencies are minimal:
-  - `libpng-dev` for PNG support
-- Build tools and dependencies are removed from the final image
-- Package lists are cleaned up during build to reduce image size
+- Uses multi-stage build to minimize final image size
+- Based on Alpine Linux for minimal base image size
+
+Build stage optimizations:
+- Minimal build dependencies:
+  - build-base (gcc, make, etc.)
+  - git (for cloning)
+  - libpng-dev (for compilation)
+  - linux-headers (for compilation)
+- Efficient source acquisition:
+  - Shallow git clone (--depth 1)
+  - Latest commit only
+
+Runtime stage optimizations:
+- Minimal runtime dependencies:
+  - libpng (for PNG support)
+  - libstdc++ (required by the binary)
+- Clean organization:
+  - Guetzli installed to `/opt/guetzli/bin`
+  - No build tools or dependencies included
+  - No source code or git history included
 
 ## Troubleshooting
 

@@ -47,7 +47,7 @@ done
 
 Guetzli supports the following options:
 
-- `--quality N`: Set quality to N (84-100, default 95)
+- `--quality N`: Set quality to N (70-110, default 95)
 - `--verbose`: Print a verbose trace of all attempts to the console
 - `--memlimit N`: Memory limit in MB (default: 6000MB)
 
